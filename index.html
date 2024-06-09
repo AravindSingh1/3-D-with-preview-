@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3d-with preview</title>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "/three.module.js",
+                "three/addons/": "./jsm/"
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <svg width="70%" height="100%" viewBox="0, 0, 100%, 100%" id="parentSVG">
+        <g>
+            <foreignObject width="500px" height="200px" requiredExtensions="http://www.w3.org/1999/xhtml">
+
+                <body xmlns="http://www.w3.org/1999/xhtml">
+                    <label for="files">Select files: </label>
+                    <input type="file" name="files" id="filesInp" accept=".glb">
+                    <input type="button" value="get" id="getBtn">
+                </body>
+            </foreignObject>
+        </g>
+    </svg>
+
+    <div class="allCtrls">
+        <div class="mnCtrls AllrotateCtrls">
+            <h3 id="rotations">Rotation <i class="fa-solid fa-chevron-down" id="upDownArrowAcc"></i></h3>
+
+            <div class="rotateXParent">
+                <div class="rotateX">
+                    <p>Rotate-X</p>
+                    <input type="range" name="rotateX" id="rotateX" min="0" , max="100" value="0">
+                    <p><span id="rotateXValue"></span></p>
+                </div>
+            </div>
+
+            <div class="rotateYParent">
+                <div class="rotateY">
+                    <p>Rotate-Y</p>
+                    <input type="range" name="rotateY" id="rotateY" min="0" , max="100" value="0">
+                    <p><span id="rotateYValue"></span></p>
+                </div>
+            </div>
+
+            <div class="rotateZParent">
+                <div class="rotateZ">
+                    <p>Rotate-Z</p>
+                    <input type="range" name="rotateZ" id="rotateZ" min="0" , max="100" value="0">
+                    <p><span id="rotateZValue"></span></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="cameraCtrls">
+            <h3 id="cameraAcc">Camera <i class="fa-solid fa-chevron-down" id="upDownArrowCameraAcc"></i></h3>
+
+            <div class="cameraX">
+                <p>Camera-X</p>
+                <input type="number" name="cameraX" id="cameraX">
+            </div>
+
+            <div class="cameraY">
+                <p>Camera-Y</p>
+                <input type="number" name="cameraY" id="cameraY">
+            </div>
+
+            <div class="cameraZ">
+                <p>Camera-Z</p>
+                <input type="number" name="cameraZ" id="cameraZ">
+            </div>
+
+        </div>
+
+        <div class="shadowCtrls">
+            <h3 id="shadowAcc">Shadow <i class="fa-solid fa-chevron-down" id="upDownArrowShadowAcc"></i></h3>
+            <div class="shadowOnOff">
+                <p>Shadow</p>
+                <label class="switch" id="shadowOnOffEl">
+                    <input type="checkbox">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            <div class="shadowTransparency">
+                <p>Transparency</p>
+                <input type="range" name="transparency" id="shadowTransparencyValue" min="0" max="100" value="50">
+            </div>
+            <div class="shadowBlur">
+                <p>Shadow-Blur</p>
+                <input type="range" name="shadowBlur" id="shadowBlurEl" min="0" max="20" value="1">
+            </div>
+        </div>
+
+    </div>
+
+    <div class="preview">
+    </div>
+
+</body>
+<script type="module" src="threeD.js"></script>
+
+</html>
