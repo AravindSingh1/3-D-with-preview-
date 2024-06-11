@@ -31,6 +31,7 @@ let model;
 let renderer;
 let plane;
 let directionalLight;
+let cameraLight;
 let boundingBoxObj;
 let shadowMaterial;
 let prevImg;
@@ -95,7 +96,12 @@ function renderFile(div) {
     directionalLight.shadow.camera.far = 100;
     directionalLight.shadow.bias = 0.00001; // Adjust as needed
     directionalLight.shadow.radius = 1;
-    scene.add(directionalLight);
+    // scene.add(directionalLight);
+
+    cameraLight = new THREE.DirectionalLight(0xffffff, 5);
+    cameraLight.position.set(5, 2, 5);
+    cameraLight.castShadow = false;
+    scene.add(cameraLight);
 
     const loader = new GLTFLoader();
     const dracoLoader = new DRACOLoader();
@@ -132,9 +138,9 @@ function renderFile(div) {
         }
 
         renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-        renderer.setPixelRatio(devicePixelRatio);
-        let width = window.innerWidth * 70 / 100;
+        let width = window.innerWidth * 75 / 100;
         let height = width * 9 / 16;
+        renderer.setPixelRatio(devicePixelRatio);
         renderer.setSize(width, height);
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.toneMappingExposure = 0.5;
@@ -155,14 +161,14 @@ function renderFile(div) {
         plane.position.y = boundingBoxObj.min.y;
         plane.rotation.x = - Math.PI / 2;
         plane.receiveShadow = true;
-        plane.material.side = THREE.DoubleSide;
+        plane.material.side = THREE.DoubleSide;                         // to make the plane both sided even ef you are looking from back shadow on plane should be visible
         scene.add(plane);
 
         renderer.render(scene, camera);
         setInitialCmraValues();
 
         prevImg = document.createElement("img");
-        setAttributes(prevImg, {id:"imgPrView", alt:"nn"});
+        setAttributes(prevImg, { id: "imgPrView", alt: "nn" });
         prevDivEl.appendChild(prevImg);
 
         renderer.domElement.setAttribute("id", "canvas");
@@ -193,6 +199,8 @@ function render() {
     cameraXEl.value = camera.position.x;
     cameraYEl.value = camera.position.y;
     cameraZEl.value = camera.position.z;
+    let cameraPositions = camera.position;
+    cameraLight.position.set(cameraPositions.x, cameraPositions.y, cameraPositions.z);
 }
 
 
@@ -209,6 +217,7 @@ function renderShadow() {
             plane.position.y = boundingBoxObj.min.y;
 
             scene.add(plane);
+            scene.add(directionalLight)
             render();
         }
     }
@@ -412,6 +421,7 @@ function toggleShadow() {
     if (isShadowOn) {
         if (scene && plane) {
             scene.remove(plane);
+            scene.remove(directionalLight)
             render();
         } else {
             alert("scene is not rendered !");
@@ -446,14 +456,14 @@ function ctrlShadowBlur() {
 }
 
 
-document.addEventListener("keydown", function(ev){
-    if(ev.code == "Enter"){
+document.addEventListener("keydown", function (ev) {
+    if (ev.code == "Enter") {
         showPreview();
     }
 });
 
 function showPreview() {
-    if(scene, camera){
+    if (scene, camera) {
         renderer.render(scene, camera);
         let cnv = document.getElementById("canvas");
         let cnvUrl = cnv.toDataURL("image/jpeg");

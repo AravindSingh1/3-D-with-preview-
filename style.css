@@ -15,7 +15,7 @@ body {
 }
 
 svg {
-    width: 70%;
+    width: 75%;
     height: 100%;
     /* outline: 1px solid red; */
 }
@@ -23,7 +23,6 @@ svg {
 .renderingDiv {
     /* padding: 20px; */
     width: 100%;
-    height: 100%;
     border: 1px solid skyblue;
     border-radius: 6px;
     overflow: hidden;
