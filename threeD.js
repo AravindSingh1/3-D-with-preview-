@@ -134,7 +134,7 @@ function renderFile(div) {
         renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
         renderer.setPixelRatio(devicePixelRatio);
         let width = window.innerWidth * 70 / 100;
-        let height = width * 2.5 / 3;
+        let height = width * 7 / 10;
         renderer.setSize(width, height);
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.toneMappingExposure = 0.5;
