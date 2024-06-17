@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from '/OrbitControls.js';
 import { GLTFLoader } from '/GLTFLoader.js';
 import { DRACOLoader } from '/DRACOLoader.js';
+import { Config } from './config.js';
 
 const fullSvgEl = document.getElementById("parentSVG");
 const selectedFiles = document.getElementById("filesInp");
@@ -22,6 +23,10 @@ const shadowOnOffEl = document.getElementById("shadowOnOffEl");
 const shadowTransparencyEl = document.getElementById("shadowTransparencyValue");
 const shadowBlurEl = document.getElementById("shadowBlurEl");
 const prevDivEl = document.querySelector(".preview");
+const allAnimaBtnsContainer = document.querySelector(".animations");
+const animaAcc = document.getElementById("animaAcc");
+const animateUpDownBtn = document.getElementById("animUpDown");
+const animUpRotateBtn = document.getElementById("animUpRotate");
 
 
 let ctrls;
@@ -35,6 +40,7 @@ let cameraLight;
 let boundingBoxObj;
 let shadowMaterial;
 let prevImg;
+let config = new Config();
 
 getBtn.addEventListener("click", renderDom);
 rotationsEl.addEventListener("click", handleRotation);
@@ -49,6 +55,9 @@ cameraZEl.addEventListener("change", ctrlCameraZ);
 shadowOnOffEl.addEventListener("mousedown", toggleShadow);
 shadowTransparencyEl.addEventListener("mousemove", ctrlShadowTransparency);
 shadowBlurEl.addEventListener("mousemove", ctrlShadowBlur);
+animaAcc.addEventListener("click", hadleAnimaAcc);
+animateUpDownBtn.addEventListener("click", animateUpDown);
+animUpRotateBtn.addEventListener("click", animateRotateUp);
 
 
 function renderDom() {
@@ -89,13 +98,13 @@ function renderFile(div) {
 
     directionalLight = new THREE.DirectionalLight(0xffffff, 10);
     directionalLight.position.set(5, 2, 5);
-    directionalLight.castShadow = true;
-    directionalLight.shadow.mapSize.width = 512;
-    directionalLight.shadow.mapSize.height = 512;
-    directionalLight.shadow.camera.near = 0.5;
-    directionalLight.shadow.camera.far = 100;
+    directionalLight.castShadow = config.directionalLight.castShadow;
+    directionalLight.shadow.mapSize.width = config.directionalLight.shadowMapSizeWidth;
+    directionalLight.shadow.mapSize.height = config.directionalLight.shadowMapSizeheight;
+    directionalLight.shadow.camera.near = config.directionalLight.shadowCameraNear;
+    directionalLight.shadow.camera.far = config.directionalLight.shadowCameraFar;
     directionalLight.shadow.bias = 0.00001; // Adjust as needed
-    directionalLight.shadow.radius = 1;
+    directionalLight.shadow.radius = config.directionalLight.shadowRadius;
     // scene.add(directionalLight);
 
     cameraLight = new THREE.DirectionalLight(0xffffff, 5);
@@ -106,7 +115,7 @@ function renderFile(div) {
     const loader = new GLTFLoader();
     const dracoLoader = new DRACOLoader();
     dracoLoader.setDecoderPath('/draco/');
-    console.log(dracoLoader);
+    // console.log(dracoLoader);
     loader.setDRACOLoader(dracoLoader);
     const fileSrc = URL.createObjectURL(selectedFiles.files[0]);
     loader.load(fileSrc, async function (glb) {
@@ -120,10 +129,11 @@ function renderFile(div) {
         });
 
         boundingBoxObj = new THREE.Box3().setFromObject(model);
-        console.log("y", boundingBoxObj.max.y);
+        // console.log("y", boundingBoxObj.max.y);
 
         var size = new THREE.Vector3();     // Three vector -> it gives 3d vector with x, y, z coordinates
-        boundingBoxObj.getSize(size);          // getting initial size of 3d-Object
+        boundingBoxObj.getSize(size);       // getting initial size of 3d-Object
+        // console.log(boundingBoxObj);
         var maxSize = new THREE.Vector3(5, 5, 5);  // setting mximum size ratio for a 3-d object
         var minSize = new THREE.Vector3(1.3, 1.3, 1.3); // setting minimum size ratio for a 3-d oject
 
@@ -143,8 +153,8 @@ function renderFile(div) {
         renderer.setPixelRatio(devicePixelRatio);
         renderer.setSize(width, height);
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 0.5;
-        renderer.shadowMap.enabled = true;
+        renderer.toneMappingExposure = config.webGlRendererP.toneMappingExposure;
+        renderer.shadowMap.enabled = config.webGlRendererP.shadowMapEnabled;
         renderer.setClearColor("white", 0);
 
         camera.lookAt(new THREE.Vector3(0, 0, 0));   // camera should look at the origin in cartecian coordinates
@@ -153,14 +163,14 @@ function renderFile(div) {
         scene.add(model);
 
         boundingBoxObj = new THREE.Box3().setFromObject(model);
-        console.log("y", boundingBoxObj.max.y);
+        // console.log("y", boundingBoxObj.max.y);
 
         const geometry = new THREE.PlaneGeometry(20, 20);
         shadowMaterial = new THREE.ShadowMaterial({ opacity: 0.5 });
         plane = new THREE.Mesh(geometry, shadowMaterial);
         plane.position.y = boundingBoxObj.min.y;
         plane.rotation.x = - Math.PI / 2;
-        plane.receiveShadow = true;
+        plane.receiveShadow = config.shadowRecievingPlane.recieveShadow;
         plane.material.side = THREE.DoubleSide;                         // to make the plane both sided even ef you are looking from back shadow on plane should be visible
         scene.add(plane);
 
@@ -187,8 +197,8 @@ function ctrlsHandling() {
     }
     ctrls = new OrbitControls(camera, renderer.domElement);
     ctrls.addEventListener('change', render);
-    ctrls.minDistance = 0.1;
-    ctrls.maxDistance = 900;
+    ctrls.minDistance = config.ctrls.minDistance;
+    ctrls.maxDistance = config.ctrls.maxDistance;
     ctrls.target.set(0, 0, 0);
     ctrls.update();
 }
@@ -347,7 +357,7 @@ function setInitialCmraValues() {
 
 
 function ctrlCameraX() {
-    console.log("running camera function ......");
+    // console.log("running camera function ......");
     if (camera) {
         let cameraPositionX = cameraXEl.value;
         let cameraPositionY = cameraYEl.value;
@@ -469,5 +479,123 @@ function showPreview() {
         let cnvUrl = cnv.toDataURL("image/jpeg");
         prevImg.src = cnvUrl;
         // console.log(cnvUrl);
+    }
+}
+
+let animaAccIsOpened = false;
+function hadleAnimaAcc() {
+    if (animaAccIsOpened) {
+        allAnimaBtnsContainer.style.height = "100px";
+        document.getElementById("upDownArrowAnima").classList.remove("fa-chevron-up");
+        document.getElementById("upDownArrowAnima").classList.add("fa-chevron-down");
+        animaAccIsOpened = false;
+    }
+    else {
+        allAnimaBtnsContainer.style.height = "250px";
+        document.getElementById("upDownArrowAnima").classList.remove("fa-chevron-down");
+        document.getElementById("upDownArrowAnima").classList.add("fa-chevron-up");
+        animaAccIsOpened = true;
+    }
+}
+
+
+function animateUpDown() {
+    console.log("hall re");
+    if(!camera || !scene){
+        alert("Load model first !");
+        return;
+    }
+    const moveTotopInter = setInterval(moveToTop, 20);
+    function moveToTop() {
+        camera.position.y -= 0.03;
+        render();
+    }
+
+    setTimeout(stopAtTop, 600);
+
+    function stopAtTop() {
+        clearInterval(moveTotopInter);
+        moveToOrigin();
+    }
+
+    function moveToOrigin() {
+        const moveToOrigin = setInterval(moveBack, 20);
+        function moveBack() {
+            camera.position.y += 0.03;
+            render();
+        }
+
+        setTimeout(stopAtOrigin, 600);
+        function stopAtOrigin() {
+            clearInterval(moveToOrigin);
+        }
+
+    }
+
+}
+
+
+function animateRotateUp() {
+    if(!scene || !camera || !model){
+        alert("load model first !");
+        return;
+    }
+
+    const rotateUp = setInterval(rotateToTop, 20);
+    function rotateToTop() {
+        let degToRotate = Math.PI/40;
+        model.rotateY(degToRotate);
+        camera.position.y -= 0.03;
+        render();
+    }
+
+    setTimeout(stopAtTop, 800);
+    function stopAtTop() {
+        clearInterval(rotateUp);
+        rotateBackToOrigin();
+    }
+
+    function rotateBackToOrigin() {
+        console.log("back rotate ");
+        const rotateToOrigin = setInterval(rotateBack, 20);
+        function rotateBack() {
+            let degToRotate = -Math.PI/40;
+            model.rotateY(degToRotate);
+            camera.position.y += 0.03;
+            render();
+        }
+
+        setTimeout(stopAtOrigin, 800);
+        function stopAtOrigin() {
+            clearInterval(rotateToOrigin);
+        }
+    }
+
+}
+
+document.getElementById("animRotateX").addEventListener("click", animateRotateX);
+function animateRotateX() {
+    if(!scene || !camera || !model){
+        alert("Load model first !");
+        return;
+    }
+
+    const rotateXIntSlow = setInterval(rotateX, 20);
+    let count = 105;
+    function rotateX () {
+        let degToRotate = Math.PI/20;
+        if(count<=70 && count>35){
+            degToRotate = 0.20944;
+        }else if(count<=35){
+            degToRotate = 0.3143;
+        }
+        model.rotateY(degToRotate);
+        render();
+        count--;
+    }
+
+    setTimeout(stopSlowRotate, 2100);
+    function stopSlowRotate() {
+        clearInterval(rotateXIntSlow);
     }
 }
