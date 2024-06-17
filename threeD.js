@@ -500,7 +500,6 @@ function hadleAnimaAcc() {
 
 
 function animateUpDown() {
-    console.log("hall re");
     if(!camera || !scene){
         alert("Load model first !");
         return;
@@ -556,7 +555,6 @@ function animateRotateUp() {
     }
 
     function rotateBackToOrigin() {
-        console.log("back rotate ");
         const rotateToOrigin = setInterval(rotateBack, 20);
         function rotateBack() {
             let degToRotate = -Math.PI/40;
