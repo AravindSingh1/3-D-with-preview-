@@ -500,11 +500,14 @@ function hadleAnimaAcc() {
 
 
 function animateUpDown() {
+    // console.log("hall re");
     if(!camera || !scene){
         alert("Load model first !");
         return;
     }
+
     const moveTotopInter = setInterval(moveToTop, 20);
+    disableAnimtns();
     function moveToTop() {
         camera.position.y -= 0.03;
         render();
@@ -527,6 +530,7 @@ function animateUpDown() {
         setTimeout(stopAtOrigin, 600);
         function stopAtOrigin() {
             clearInterval(moveToOrigin);
+            enableAnimBtns();
         }
 
     }
@@ -541,6 +545,7 @@ function animateRotateUp() {
     }
 
     const rotateUp = setInterval(rotateToTop, 20);
+    disableAnimtns();
     function rotateToTop() {
         let degToRotate = Math.PI/40;
         model.rotateY(degToRotate);
@@ -555,6 +560,7 @@ function animateRotateUp() {
     }
 
     function rotateBackToOrigin() {
+        // console.log("back rotate ");
         const rotateToOrigin = setInterval(rotateBack, 20);
         function rotateBack() {
             let degToRotate = -Math.PI/40;
@@ -566,6 +572,7 @@ function animateRotateUp() {
         setTimeout(stopAtOrigin, 800);
         function stopAtOrigin() {
             clearInterval(rotateToOrigin);
+            enableAnimBtns();
         }
     }
 
@@ -579,6 +586,7 @@ function animateRotateX() {
     }
 
     const rotateXIntSlow = setInterval(rotateX, 20);
+    disableAnimtns();
     let count = 105;
     function rotateX () {
         let degToRotate = Math.PI/20;
@@ -595,5 +603,14 @@ function animateRotateX() {
     setTimeout(stopSlowRotate, 2100);
     function stopSlowRotate() {
         clearInterval(rotateXIntSlow);
+        enableAnimBtns();
     }
+}
+
+function disableAnimtns() {
+    allAnimaBtnsContainer.style.pointerEvents = "none";
+}
+
+function enableAnimBtns() {
+    allAnimaBtnsContainer.style.pointerEvents = "auto";
 }
