@@ -142,12 +142,12 @@ function renderFile(div) {
             model.scale.set(scaleFactor, scaleFactor, scaleFactor);
         }
 
-        if (size.x < minSize || size.y < minSize.y || size.z < minSize.z) {  // inncreasing the size of 3-d object if it is less than respective ratio
+        else if (size.x < minSize || size.y < minSize.y || size.z < minSize.z) {  // inncreasing the size of 3-d object if it is less than respective ratio
             var scaleFactor = Math.max(minSize.x / size.x, minSize.y / size.y, minSize.z / size.z);
             model.scale.set(scaleFactor, scaleFactor, scaleFactor);
         }
 
-        renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, logarithmicDepthBuffer:true });
         let width = window.innerWidth * 75 / 100;
         let height = width * 9 / 16;
         renderer.setPixelRatio(devicePixelRatio);
